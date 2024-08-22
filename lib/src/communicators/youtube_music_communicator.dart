@@ -1,6 +1,8 @@
 import 'dart:io';
 
 // import 'package:just_audio/just_audio.dart';
+import 'package:duration_logger/duration_logger.dart';
+import 'package:filesize/filesize.dart';
 import 'package:proplaya_communication/src/communicators/communicator.dart';
 import 'package:proplaya_communication/src/communicators/entities/entity.dart';
 import 'package:proplaya_communication/src/communicators/entities/playlist_e.dart';
@@ -21,10 +23,13 @@ class YoutubeMusicCommunicator with Communicator {
     String pathWithName,
     SongE song,
   ) async {
+    final logger = DurationLogger(keepLogs: true);
+
     final String songId = song.id;
 
-    final StreamManifest manifest =
-        await yt.videos.streamsClient.getManifest(songId);
+    final StreamManifest manifest = await yt.videos.streamsClient
+        .getManifest(songId)
+        .logTime("Getting manifest", logger);
 
     final StreamInfo streamInfo = manifest.audioOnly.withHighestBitrate();
 
@@ -43,7 +48,20 @@ class YoutubeMusicCommunicator with Communicator {
     final fileStream = file.openWrite();
 
     // Pipe all the content of the stream into the file.
-    await stream.pipe(fileStream);
+    await stream.pipe(fileStream).logTime("Downloading song", logger);
+
+    file.stat().then((stat) {
+      logger.done();
+      print(
+        "Getting manifest took ${logger.getDurationOfAction("Getting manifest")!.inMilliseconds} ms",
+      );
+
+      final duration = logger.getDurationOfAction("Downloading song")!;
+
+      print(
+        "Downloaded '$songId' ${filesize(stat.size)} at ${(filesize((stat.size / duration.inMilliseconds * 1000).toInt()))}/s",
+      );
+    });
 
     // Close the file.
     await fileStream.flush();
