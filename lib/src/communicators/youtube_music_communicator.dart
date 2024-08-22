@@ -17,7 +17,7 @@ class YoutubeMusicCommunicator with Communicator {
 
   /// Downloads the audio of a song.
   @override
-  Future<File?> download(
+  Future<File> download(
     String pathWithName,
     SongE song,
   ) async {
@@ -38,6 +38,8 @@ class YoutubeMusicCommunicator with Communicator {
         ".${streamInfo.codec.subtype}",
       ),
     );
+    await file.create(recursive: true);
+
     final fileStream = file.openWrite();
 
     // Pipe all the content of the stream into the file.

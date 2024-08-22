@@ -16,5 +16,5 @@ mixin Communicator {
 
   Future<PlaylistE> getPlaylist_(String playlistId);
 
-  Future<File?> download(String path, SongE songE);
+  Future<File> download(String path, SongE songE);
 }

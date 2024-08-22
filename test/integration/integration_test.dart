@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Integration', () {
-    final downloader = ProplayaDownloader();
+  group('Integration', () async {
+    final downloader = await ProplayaDownloader.create();
 
     setUpAll(() async {
       const MethodChannel channel =
