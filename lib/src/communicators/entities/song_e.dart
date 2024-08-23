@@ -30,9 +30,6 @@ class SongE extends Entity {
       };
 
   @override
-  Future<List?>? getChildren_(String id, {bool force = false}) => null;
-
-  @override
   Future<File?>? download(String pathWithName) =>
       communicator.download(pathWithName, this);
 }
