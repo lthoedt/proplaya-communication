@@ -87,10 +87,27 @@ class YoutubeMusicCommunicator with Communicator {
     return PlaylistE(
       id: playlist.id.value,
       name: playlist.title,
-      length: playlist.videoCount ?? 0,
+      length: playlist.videoCount ?? -1,
       downloaded: null,
       url: playlist.url,
       sourcePlatform: SourcePlatforms.youtube,
     );
+  }
+
+  @override
+  Future<List<SongE>> getSongsOfPlaylist_(String playlistId) async {
+    final videos = await yt.playlists.getVideos(playlistId).toList();
+    return videos
+        .map(
+          (v) => SongE(
+            id: v.id.value,
+            name: v.title,
+            artist: v.author,
+            duration: v.duration,
+            url: v.url,
+            sourcePlatform: SourcePlatforms.youtube,
+          ),
+        )
+        .toList();
   }
 }

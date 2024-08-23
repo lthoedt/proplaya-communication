@@ -38,6 +38,8 @@ void main() {
                 name: "Hooked on a Feeling",
                 url: "https://www.youtube.com/watch?v=7Z3uhIRkBNw",
                 sourcePlatform: SourcePlatforms.youtube,
+                duration: Duration(minutes: 2, seconds: 53),
+                artist: "Blue Swede",
               ),
             ],
           ),

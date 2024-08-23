@@ -14,7 +14,16 @@ mixin Communicator {
     }
   }
 
+  Future<List<SongE>?> getSongsOfPlaylist(String playlistId) async {
+    try {
+      return await getSongsOfPlaylist_(playlistId);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<PlaylistE> getPlaylist_(String playlistId);
+  Future<List<SongE>> getSongsOfPlaylist_(String playlistId);
 
   Future<File> download(String path, SongE songE);
 }

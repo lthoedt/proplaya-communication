@@ -1,4 +1,4 @@
-import 'package:proplaya_communication/src/communicators/entities/entity.dart';
+import 'package:proplaya_communication/proplaya_communication.dart';
 import 'package:proplaya_storage_management/proplaya_storage_management.dart';
 
 class PlaylistE extends Entity {
@@ -24,4 +24,8 @@ class PlaylistE extends Entity {
         'name': name,
         'length': length,
       };
+
+  @override
+  Future<List<SongE>?>? getChildren_(String id) =>
+      communicator.getSongsOfPlaylist(id);
 }
