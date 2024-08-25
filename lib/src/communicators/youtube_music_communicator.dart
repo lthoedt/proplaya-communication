@@ -4,16 +4,18 @@ import 'dart:io';
 import 'package:duration_logger/duration_logger.dart';
 import 'package:filesize/filesize.dart';
 import 'package:proplaya_communication/src/communicators/communicator.dart';
-import 'package:proplaya_communication/src/communicators/entities/entity.dart';
-import 'package:proplaya_communication/src/communicators/entities/playlist_e.dart';
 import 'package:proplaya_communication/src/communicators/entities/song_e.dart';
+import 'package:proplaya_communication/src/mappers/youtube_music_mapper.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:path/path.dart' as p;
 
-class YoutubeMusicCommunicator with Communicator {
+class YoutubeMusicCommunicator extends Communicator<Video, Playlist> {
   late final YoutubeExplode yt;
 
-  YoutubeMusicCommunicator() {
+  YoutubeMusicCommunicator()
+      : super(
+          mapper: YoutubeMusicMapper(),
+        ) {
     yt = YoutubeExplode();
   }
 
@@ -80,34 +82,10 @@ class YoutubeMusicCommunicator with Communicator {
   // player.play();
 
   @override
-  Future<PlaylistE> getPlaylist_(String playlistId) async {
-    final Playlist playlist = await yt.playlists.get(playlistId);
-
-    // Maybe move this to some kind of mapper.
-    return PlaylistE(
-      id: playlist.id.value,
-      name: playlist.title,
-      length: playlist.videoCount ?? -1,
-      downloaded: null,
-      url: playlist.url,
-      sourcePlatform: SourcePlatforms.youtube,
-    );
-  }
+  Future<Playlist> getPlaylist_(String playlistId) =>
+      yt.playlists.get(playlistId);
 
   @override
-  Future<List<SongE>> getSongsOfPlaylist_(String playlistId) async {
-    final videos = await yt.playlists.getVideos(playlistId).toList();
-    return videos
-        .map(
-          (v) => SongE(
-            id: v.id.value,
-            name: v.title,
-            artist: v.author,
-            duration: v.duration,
-            url: v.url,
-            sourcePlatform: SourcePlatforms.youtube,
-          ),
-        )
-        .toList();
-  }
+  Future<Iterable<Video>> getSongsOfPlaylist_(String playlistId) =>
+      yt.playlists.getVideos(playlistId).toList();
 }

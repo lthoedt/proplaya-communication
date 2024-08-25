@@ -4,11 +4,16 @@ import 'dart:io';
 
 import 'package:proplaya_communication/src/communicators/entities/playlist_e.dart';
 import 'package:proplaya_communication/src/communicators/entities/song_e.dart';
+import 'package:proplaya_communication/src/mappers/entity_mapper.dart';
 
-mixin Communicator {
+abstract class Communicator<Song, Playlist> {
+  final EntityMapper<Song, Playlist> mapper;
+
+  Communicator({required this.mapper});
+
   Future<PlaylistE?> getPlaylist(String playlistId) async {
     try {
-      return await getPlaylist_(playlistId);
+      return mapper.toPlaylist(await getPlaylist_(playlistId));
     } catch (e) {
       return null;
     }
@@ -16,14 +21,16 @@ mixin Communicator {
 
   Future<List<SongE>?> getSongsOfPlaylist(String playlistId) async {
     try {
-      return await getSongsOfPlaylist_(playlistId);
+      return (await getSongsOfPlaylist_(playlistId))
+          .map((e) => mapper.toSong(e))
+          .toList();
     } catch (e) {
       return null;
     }
   }
 
-  Future<PlaylistE> getPlaylist_(String playlistId);
-  Future<List<SongE>> getSongsOfPlaylist_(String playlistId);
+  Future<Playlist> getPlaylist_(String playlistId);
+  Future<Iterable<Song>> getSongsOfPlaylist_(String playlistId);
 
   Future<File> download(String path, SongE songE);
 }
